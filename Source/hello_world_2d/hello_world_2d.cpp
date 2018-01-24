@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright David Lovi, 2018.
 
 #include "hello_world_2d.h"
 #include "Modules/ModuleManager.h"
