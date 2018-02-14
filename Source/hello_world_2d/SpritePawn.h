@@ -7,11 +7,14 @@
 #include "PaperFlipbookComponent.h"
 #include "PaperFlipbook.h"
 #include "Camera/CameraComponent.h"
+
+#include <map>
+
 #include "SpritePawn.generated.h"
 
 
 UENUM(BlueprintType)
-enum class EDirection : uint8 {
+enum class EBearing : uint8 {
     NORTH,
     EAST,
     SOUTH,
@@ -24,9 +27,23 @@ class HELLO_WORLD_2D_API ASpritePawn : public APawn
 {
 	GENERATED_BODY()
 
+private:
+    std::map<EBearing, UPaperFlipbook *> bearingToWalkAnim;
+    std::map<EBearing, UPaperFlipbook *> bearingToIdleAnim;
+
+    FVector bearingToVector();
+
 protected:
     UPROPERTY(EditAnywhere)
-    EDirection direction;
+    EBearing direction;
+
+    UPROPERTY(EditAnywhere)
+    float fastWalkSpeed;
+    UPROPERTY(EditAnywhere)
+    float slowWalkSpeed;
+
+    float walkSpeed;
+    bool bIsWalking;
 
     UPROPERTY(EditDefaultsOnly)
     UPaperFlipbookComponent* animation;
@@ -52,11 +69,15 @@ protected:
     UPROPERTY(EditAnywhere)
     UCameraComponent *camera;
 
+    UPaperFlipbook* selectFlipBook();
+
 public:
 	// Sets default values for this pawn's properties
 	ASpritePawn();
 
 protected:
+    virtual void PostInitProperties() override;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -71,8 +92,7 @@ public:
     // TODO: Think about firing blueprint-implementable events for some of these
     void Interact();
     void Cancel();
-    void MoveRight(float AxisValue);
-    void MoveUp(float AxisValue);
-
-    void updateDirection(EDirection newDirection);
+    void MoveRight(float axisValue);
+    void MoveUp(float axisValue);
+    void Move(float axisValue, EBearing forward, EBearing backward);
 };

@@ -4,6 +4,26 @@
 #include "Components/SceneComponent.h"
 
 
+FVector ASpritePawn::bearingToVector() {
+    switch (direction) {
+        case EBearing::NORTH:
+            return FVector(0.0f, 0.0f, 1.0f);
+            break;
+        case EBearing::EAST:
+            return FVector(1.0f, 0.0f, 0.0f);
+            break;
+        case EBearing::SOUTH:
+            return FVector(0.0f, 0.0f, -1.0f);
+            break;
+        case EBearing::WEST:
+            return FVector(-1.0f, 0.0f, 0.0f);
+            break;
+        default:
+            return FVector(0.0f, 0.0f, 0.0f);
+            break;
+    }
+}
+
 // Sets default values
 ASpritePawn::ASpritePawn()
 {
@@ -27,14 +47,34 @@ ASpritePawn::ASpritePawn()
 
     animation->SetupAttachment(RootComponent);
     animation->SetLooping(true);
+
+    direction = EBearing::SOUTH;
+    bIsWalking = false;
+    fastWalkSpeed = 90.0f;
+    slowWalkSpeed = 30.0f;
+}
+
+void ASpritePawn::PostInitProperties() {
+    Super::PostInitProperties();
+
+    walkSpeed = slowWalkSpeed;
+
+    bearingToWalkAnim[EBearing::NORTH] = walkUpSpriteAnim;
+    bearingToWalkAnim[EBearing::EAST] = walkRightSpriteAnim;
+    bearingToWalkAnim[EBearing::SOUTH] = walkDownSpriteAnim;
+    bearingToWalkAnim[EBearing::WEST] = walkLeftSpriteAnim;
+
+    bearingToIdleAnim[EBearing::NORTH] = idleUpSpriteAnim;
+    bearingToIdleAnim[EBearing::EAST] = idleRightSpriteAnim;
+    bearingToIdleAnim[EBearing::SOUTH] = idleDownSpriteAnim;
+    bearingToIdleAnim[EBearing::WEST] = idleLeftSpriteAnim;
 }
 
 // Called when the game starts or when spawned
 void ASpritePawn::BeginPlay()
 {
 	Super::BeginPlay();
-    direction = EDirection::SOUTH;
-    animation->SetFlipbook(idleDownSpriteAnim);
+    animation->SetFlipbook(selectFlipBook());
 }
 
 // Called every frame
@@ -42,6 +82,10 @@ void ASpritePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+    if (bIsWalking) {
+        FVector loc = GetActorLocation() + walkSpeed * DeltaTime * bearingToVector();
+        SetActorLocation(loc, false);  // TODO: Collision
+    }
 }
 
 // Called to bind functionality to input
@@ -64,40 +108,37 @@ void ASpritePawn::Cancel() {
     // TODO: Stub.  Cancel button pressed
 }
 
-void ASpritePawn::MoveRight(float AxisValue) {
-    auto newDirection = direction;
-    if (AxisValue > 0.0f) {
-        newDirection = EDirection::EAST;
-    } else if (AxisValue < 0.0f) {
-        newDirection = EDirection::WEST;
-    }
-
-    updateDirection(newDirection);
+void ASpritePawn::MoveRight(float axisValue) {
+    Move(axisValue, EBearing::EAST, EBearing::WEST);
 }
 
-void ASpritePawn::MoveUp(float AxisValue) {
-    auto newDirection = direction;
-    if (AxisValue > 0.0f) {
-        newDirection = EDirection::NORTH;
-    } else if (AxisValue < 0.0f) {
-        newDirection = EDirection::SOUTH;
-    }
-
-    updateDirection(newDirection);
+void ASpritePawn::MoveUp(float axisValue) {
+    Move(axisValue, EBearing::NORTH, EBearing::SOUTH);
 }
 
-void ASpritePawn::updateDirection(EDirection newDirection) {
-    if (newDirection == direction)
-        return;
-    direction = newDirection;
+void ASpritePawn::Move(float axisValue, EBearing forward, EBearing backward) {
+    auto newDirection = direction;
+    bool bNewIsWalking = bIsWalking;
 
-    if (direction == EDirection::NORTH) {
-        animation->SetFlipbook(walkUpSpriteAnim);
-    } else if (direction == EDirection::SOUTH) {
-        animation->SetFlipbook(walkDownSpriteAnim);
-    } else if (direction == EDirection::EAST) {
-        animation->SetFlipbook(walkRightSpriteAnim);
-    } else if (direction == EDirection::WEST) {
-        animation->SetFlipbook(walkLeftSpriteAnim);
+    if (axisValue > 0.0f) {
+        newDirection = forward;
+        bNewIsWalking = true;
+    } else if (axisValue < 0.0f) {
+        newDirection = backward;
+        bNewIsWalking = true;
+    } else if (direction == forward || direction == backward) {
+        bNewIsWalking = false;
     }
+
+    if (newDirection != direction || bNewIsWalking != bIsWalking) {
+        direction = newDirection;
+        bIsWalking = bNewIsWalking;
+        animation->SetFlipbook(selectFlipBook());
+    }
+}
+
+UPaperFlipbook* ASpritePawn::selectFlipBook() {
+    if (bIsWalking)
+        return bearingToWalkAnim[direction];
+    return bearingToIdleAnim[direction];
 }
