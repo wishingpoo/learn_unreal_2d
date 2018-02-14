@@ -9,12 +9,25 @@
 #include "Camera/CameraComponent.h"
 #include "SpritePawn.generated.h"
 
+
+UENUM(BlueprintType)
+enum class EDirection : uint8 {
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST
+};
+
+
 UCLASS()
 class HELLO_WORLD_2D_API ASpritePawn : public APawn
 {
 	GENERATED_BODY()
 
 protected:
+    UPROPERTY(EditAnywhere)
+    EDirection direction;
+
     UPROPERTY(EditDefaultsOnly)
     UPaperFlipbookComponent* animation;
 
@@ -53,4 +66,13 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+    // Input bindings:
+    // TODO: Think about firing blueprint-implementable events for some of these
+    void Interact();
+    void Cancel();
+    void MoveRight(float AxisValue);
+    void MoveUp(float AxisValue);
+
+    void updateDirection(EDirection newDirection);
 };
