@@ -104,6 +104,8 @@ void ASpritePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
     InputComponent->BindAction("A", IE_Pressed, this, &ASpritePawn::Interact);
     InputComponent->BindAction("B", IE_Pressed, this, &ASpritePawn::Cancel);
+    InputComponent->BindAction("Y", IE_Pressed, this, &ASpritePawn::Run);
+    InputComponent->BindAction("Y", IE_Released, this, &ASpritePawn::Walk);
 
     InputComponent->BindAxis("MoveRight", this, &ASpritePawn::MoveRight);
     InputComponent->BindAxis("MoveUp", this, &ASpritePawn::MoveUp);
@@ -115,6 +117,14 @@ void ASpritePawn::Interact() {
 
 void ASpritePawn::Cancel() {
     // TODO: Stub.  Cancel button pressed
+}
+
+void ASpritePawn::Run() {
+    walkSpeed = fastWalkSpeed;
+}
+
+void ASpritePawn::Walk() {
+    walkSpeed = slowWalkSpeed;
 }
 
 void ASpritePawn::MoveRight(float axisValue) {

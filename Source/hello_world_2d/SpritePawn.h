@@ -93,6 +93,8 @@ public:
     // TODO: Think about firing blueprint-implementable events for some of these
     void Interact();
     void Cancel();
+    void Run();
+    void Walk();
     void MoveRight(float axisValue);
     void MoveUp(float axisValue);
     void Move(float axisValue, EBearing forward, EBearing backward);
