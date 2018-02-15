@@ -34,16 +34,17 @@ private:
     FVector bearingToVector();
 
 protected:
-    UPROPERTY(EditAnywhere)
     EBearing direction;
+    EBearing inputDirection;
+
+    float walkSpeed;
+    bool bIsWalking;
+    bool bInputIsWalking;
 
     UPROPERTY(EditAnywhere)
     float fastWalkSpeed;
     UPROPERTY(EditAnywhere)
     float slowWalkSpeed;
-
-    float walkSpeed;
-    bool bIsWalking;
 
     UPROPERTY(EditDefaultsOnly)
     UPaperFlipbookComponent* animation;

@@ -50,6 +50,9 @@ ASpritePawn::ASpritePawn()
 
     direction = EBearing::SOUTH;
     bIsWalking = false;
+    inputDirection = direction;
+    bInputIsWalking = bIsWalking;
+
     fastWalkSpeed = 90.0f;
     slowWalkSpeed = 30.0f;
 }
@@ -81,6 +84,12 @@ void ASpritePawn::BeginPlay()
 void ASpritePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+    if (inputDirection != direction || bInputIsWalking != bIsWalking) {
+        direction = inputDirection;
+        bIsWalking = bInputIsWalking;
+        animation->SetFlipbook(selectFlipBook());
+    }
 
     if (bIsWalking) {
         FVector loc = GetActorLocation() + walkSpeed * DeltaTime * bearingToVector();
@@ -117,23 +126,14 @@ void ASpritePawn::MoveUp(float axisValue) {
 }
 
 void ASpritePawn::Move(float axisValue, EBearing forward, EBearing backward) {
-    auto newDirection = direction;
-    bool bNewIsWalking = bIsWalking;
-
     if (axisValue > 0.0f) {
-        newDirection = forward;
-        bNewIsWalking = true;
+        inputDirection = forward;
+        bInputIsWalking = true;
     } else if (axisValue < 0.0f) {
-        newDirection = backward;
-        bNewIsWalking = true;
+        inputDirection = backward;
+        bInputIsWalking = true;
     } else if (direction == forward || direction == backward) {
-        bNewIsWalking = false;
-    }
-
-    if (newDirection != direction || bNewIsWalking != bIsWalking) {
-        direction = newDirection;
-        bIsWalking = bNewIsWalking;
-        animation->SetFlipbook(selectFlipBook());
+        bInputIsWalking = false;
     }
 }
 
