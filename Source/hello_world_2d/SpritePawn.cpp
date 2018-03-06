@@ -113,10 +113,12 @@ void ASpritePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ASpritePawn::Interact() {
     // TODO: Stub.  Interaction button pressed
+    resolutionManager.NextResolution(false);
 }
 
 void ASpritePawn::Cancel() {
     // TODO: Stub.  Cancel button pressed
+    resolutionManager.NextResolution(true);
 }
 
 void ASpritePawn::Run() {

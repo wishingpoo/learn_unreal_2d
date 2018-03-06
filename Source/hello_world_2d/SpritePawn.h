@@ -9,6 +9,7 @@
 #include "Camera/CameraComponent.h"
 
 #include <map>
+#include "ResolutionManager.h"
 
 #include "SpritePawn.generated.h"
 
@@ -30,6 +31,7 @@ class HELLO_WORLD_2D_API ASpritePawn : public APawn
 private:
     std::map<EBearing, UPaperFlipbook *> bearingToWalkAnim;
     std::map<EBearing, UPaperFlipbook *> bearingToIdleAnim;
+    FResolutionManager resolutionManager;
 
     FVector bearingToVector();
 
