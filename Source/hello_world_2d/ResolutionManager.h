@@ -16,6 +16,9 @@ struct HELLO_WORLD_2D_API FResolutionManager
 {
     GENERATED_USTRUCT_BODY()
 
+public:
+    static constexpr double PPU = 3.2;
+
 private:
     UGameUserSettings* GetUserSettings();
     std::vector<std::pair<uint32, uint32> > ComputeSupportedResolutions();
