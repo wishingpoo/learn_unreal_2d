@@ -107,6 +107,8 @@ void ASpritePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
     InputComponent->BindAction("Y", IE_Pressed, this, &ASpritePawn::Run);
     InputComponent->BindAction("Y", IE_Released, this, &ASpritePawn::Walk);
 
+    InputComponent->BindAction("Escape", IE_Pressed, this, &ASpritePawn::QuitGame);
+
     InputComponent->BindAxis("MoveRight", this, &ASpritePawn::MoveRight);
     InputComponent->BindAxis("MoveUp", this, &ASpritePawn::MoveUp);
 }
@@ -147,6 +149,10 @@ void ASpritePawn::Move(float axisValue, EBearing forward, EBearing backward) {
     } else if (direction == forward || direction == backward) {
         bInputIsWalking = false;
     }
+}
+
+void ASpritePawn::QuitGame() {
+    GetWorld()->GetFirstPlayerController()->ConsoleCommand("quit");
 }
 
 UPaperFlipbook* ASpritePawn::selectFlipBook() {

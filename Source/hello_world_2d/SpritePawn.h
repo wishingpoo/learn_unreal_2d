@@ -100,4 +100,5 @@ public:
     void MoveRight(float axisValue);
     void MoveUp(float axisValue);
     void Move(float axisValue, EBearing forward, EBearing backward);
+    void QuitGame();
 };
